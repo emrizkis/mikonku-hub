@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="header-action">
+        <h1>✨ Magic Project Generator</h1>
+        <a href="{{ url_for('projects.index') }}" class="btn btn-secondary">Back to Projects</a>
+    </div>
+
+    <div class="form-container" style="max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <p style="margin-bottom: 20px; color: #666;">
+            Describe your project idea in detail, and our AI will automatically generate a project plan with tasks, timelines, and dependencies for you.
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 20px; border-radius: 4px; 
+                  {% if category == 'error' %}background-color: #f8d7da; color: #721c24;{% else %}background-color: #d4edda; color: #155724;{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('ai_projects.store') }}" method="POST">
+            <div class="form-group">
+                <label for="prompt">What do you want to build?</label>
+                <textarea name="prompt" id="prompt" rows="6" class="form-control" placeholder="e.g., I want to plan a marketing campaign for a new coffee shop launching next month. We need to design a logo, set up social media, print flyers, and host a grand opening event." required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            </div>
+
+            <div class="form-actions" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1.1em;">
+                    ✨ Generate Project Plan
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

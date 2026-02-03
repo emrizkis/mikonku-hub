@@ -1,0 +1,58 @@
+<div class="form-group">
+    <label for="name">Task Name</label>
+    <input type="text" id="name" name="name" value="{{ task.name if task else '' }}" required>
+</div>
+<div class="form-group">
+    <label for="assigned_to_id">Assign To</label>
+    <select id="assigned_to_id" name="assigned_to_id">
+        <option value="">-- Unassigned --</option>
+        {% for member in members %}
+        <option value="{{ member.id }}" {% if task and task.assigned_to_id == member.id %}selected{% endif %}>{{ member.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="form-row" style="display: flex; gap: 20px;">
+    <div class="form-group" style="flex: 1;">
+        <label for="plan_start_date">Plan Start Date</label>
+        <input type="date" id="plan_start_date" name="plan_start_date" value="{{ task.plan_start_date if task else '' }}" required>
+    </div>
+    <div class="form-group" style="flex: 1;">
+        <label for="plan_end_date">Plan End Date</label>
+        <input type="date" id="plan_end_date" name="plan_end_date" value="{{ task.plan_end_date if task else '' }}" required>
+    </div>
+</div>
+
+<div class="form-row" style="display: flex; gap: 20px;">
+    <div class="form-group" style="flex: 1;">
+        <label for="actual_start_date">Actual Start Date</label>
+        <input type="date" id="actual_start_date" name="actual_start_date" value="{{ task.actual_start_date if task else '' }}">
+    </div>
+    <div class="form-group" style="flex: 1;">
+        <label for="actual_end_date">Actual End Date</label>
+        <input type="date" id="actual_end_date" name="actual_end_date" value="{{ task.actual_end_date if task else '' }}">
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="Pending" {% if task and task.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="In Progress" {% if task and task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+            <option value="Completed" {% if task and task.status == 'Completed' %}selected{% endif %}>Completed</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="progress">Progress (%)</label>
+        <input type="number" id="progress" name="progress" min="0" max="100" value="{{ task.progress if task else 0 }}">
+    </div>
+</div>
+
+<div class="mb-3 form-check" style="margin-top: 15px;">
+    <input type="checkbox" class="form-check-input" id="reminder_enabled" name="reminder_enabled" {% if task and task.reminder_enabled %}checked{% endif %}>
+    <label class="form-check-label" for="reminder_enabled">Enable Email Reminder (3 days before due)</label>
+</div>
+
+<div class="mb-3" style="margin-top: 15px;">
+    <label for="reminder_custom_message" class="form-label">Reminder Custom Message (Optional)</label>
+    <textarea class="form-control" id="reminder_custom_message" name="reminder_custom_message" rows="3" style="width: 100%;">{{ task.reminder_custom_message if task else '' }}</textarea>
+</div>

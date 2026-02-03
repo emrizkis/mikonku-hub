@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>All Projects Schedule</h1>
+        <div class="view-controls">
+            <button type="button" onclick="setView('daily')" class="btn btn-secondary {{ 'active' if view_mode == 'daily' else '' }}" style="{{ 'background-color: #007bff; color: white;' if view_mode == 'daily' else '' }}">Daily</button>
+            <button type="button" onclick="setView('weekly')" class="btn btn-secondary {{ 'active' if view_mode == 'weekly' else '' }}" style="{{ 'background-color: #007bff; color: white;' if view_mode == 'weekly' else '' }}">Weekly</button>
+        </div>
+    </div>
+
+    <!-- Hidden form to maintain view state if needed, or we just handle URL params in JS -->
+    <form id="viewForm" action="{{ url_for('gantt.index') }}" method="get" style="display:none;">
+        <input type="hidden" name="view" value="{{ view_mode }}">
+        <!-- 'p' params will be handled by logic -->
+    </form>
+
+    <div class="chart-container">
+        {{ graph_html|safe }}
+    </div>
+
+    <script>
+        // Data from Server
+        const allProjects = [
+            {% for project in all_projects %}
+            { id: {{ project.id }}, name: "{{ project.name }}" },
+            {% endfor %}
+        ];
+        
+        // Correctly parse selected_ids from server context
+        // If selected_ids is None or empty in a specific way, we need to handle it.
+        // In python: if no 'p' param, selected_ids is effectively ALL IDs conceptually for the toggle logic.
+        // Let's grab the actual query param string to know if we are in "Default" (All) or "Filtered" mode.
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentSelectedIds = urlParams.getAll('p').map(Number);
+        
+        // If no 'p' params exist, it means ALL projects are selected by default.
+        if (!urlParams.has('p')) {
+            currentSelectedIds = allProjects.map(p => p.id);
+        }
+
+        function setView(mode) {
+           const form = document.getElementById('viewForm');
+           form.querySelector('input[name="view"]').value = mode;
+           // Append current project filters to form
+            currentSelectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'p';
+                input.value = id;
+                form.appendChild(input);
+            });
+           form.submit();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const graphDiv = document.getElementsByClassName('plotly-graph-div')[0];
+            
+            if (graphDiv) {
+                graphDiv.on('plotly_legendclick', function(data) {
+                    const traceIndex = data.curveNumber;
+                    const traceName = data.data[traceIndex].legendgroup || data.data[traceIndex].name; 
+                    // Note: Plotly Express uses the same value for name and legendgroup usually with color arg.
+                    
+                    console.log("Legend Clicked:", traceName);
+                    
+                    // Find Project ID by Name
+                    const project = allProjects.find(p => p.name === traceName);
+                    if (project) {
+                        const pid = project.id;
+                        
+                        // Toggle Logic
+                        const index = currentSelectedIds.indexOf(pid);
+                        if (index > -1) {
+                            // Currently Selected -> Remove it (Hide)
+                            currentSelectedIds.splice(index, 1);
+                        } else {
+                            // Not Selected -> Add it (Show)
+                            currentSelectedIds.push(pid);
+                        }
+                        
+                        // Construct New URL
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.delete('p');
+                        currentSelectedIds.forEach(id => newUrl.searchParams.append('p', id));
+                        
+                        // Reload
+                        window.location.href = newUrl.toString();
+                    }
+                    
+                    return false; // Prevent default Plotly behavior (client-side toggle)
+                });
+            }
+        });
+    </script>
+{% endblock %}

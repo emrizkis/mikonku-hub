@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="form-section">
+    <div class="breadcrumb">
+        <a href="{{ url_for('projects.index') }}">&larr; Back to Projects</a>
+    </div>
+    
+    <h2>Create New Project</h2>
+    <form action="{{ url_for('projects.store') }}" method="POST">
+        {% include 'components/project_form.html' %}
+        <button type="submit" class="btn btn-primary">Save Project</button>
+    </form>
+</section>
+{% endblock %}

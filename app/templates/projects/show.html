@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="project-detail">
+    <div class="breadcrumb">
+        <a href="{{ url_for('projects.index') }}">&larr; Back to Projects</a>
+    </div>
+    
+    <h1>{{ project.name }}</h1>
+    <p>{{ project.description }}</p>
+
+    <div class="task-list">
+        <h2>Tasks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Plan Start</th>
+                    <th>Plan End</th>
+                    <th>Actual Start</th>
+                    <th>Actual End</th>
+                    <th>Assignee</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in project.tasks %}
+                <tr>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.plan_start_date }}</td>
+                    <td>{{ task.plan_end_date }}</td>
+                    <td>{{ task.actual_start_date or '-' }}</td>
+                    <td>{{ task.actual_end_date or '-' }}</td>
+                    <td>{{ task.assignee.name if task.assignee else 'Unassigned' }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ task.progress }}%;">{{ task.progress }}%</div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('tasks.edit', id=task.id) }}" class="btn btn-secondary">Edit</a>
+                        <form action="{{ url_for('tasks.delete', id=task.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No tasks added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-section">
+        <h2>Add Task</h2>
+        <form action="{{ url_for('tasks.store', project_id=project.id) }}" method="POST">
+            {% include 'components/task_form.html' %}
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

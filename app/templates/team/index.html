@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="header-action" style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Team Management</h1>
+        <a href="{{ url_for('team.create') }}" class="btn btn-primary">Add Member</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 20px; border-radius: 4px; 
+              {% if category == 'error' %}background-color: #f8d7da; color: #721c24;{% else %}background-color: #d4edda; color: #155724;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="project-list" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+        {% for member in members %}
+        <div class="card project-card">
+            <h2>{{ member.name }}</h2>
+            <p><strong>Role:</strong> {{ member.role or 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ member.email or 'N/A' }}</p>
+            <div class="actions" style="margin-top: 10px;">
+                <a href="{{ url_for('team.edit', id=member.id) }}" class="btn btn-secondary" style="background-color: #f39c12;">Edit</a>
+                <form action="{{ url_for('team.delete', id=member.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-secondary" style="background-color: #c0392b;" onclick="return confirm('Remove {{ member.name }}?')">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p>No team members found.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

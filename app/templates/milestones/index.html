@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="milestone-view">
+    <h1>Project Milestones</h1>
+    <p>Visualizing Project Start and Estimated Finish dates.</p>
+    
+    <!-- Chart -->
+    <div class="chart-container" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        {{ graph_html|safe }}
+    </div>
+</section>
+{% endblock %}

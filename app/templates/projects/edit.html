@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="form-section">
+    <div class="breadcrumb">
+        <a href="{{ url_for('projects.show', id=project.id) }}">&larr; Back to Project</a>
+    </div>
+    
+    <h2>Edit Project</h2>
+    <form action="{{ url_for('projects.update', id=project.id) }}" method="POST">
+        {% include 'components/project_form.html' %}
+        <button type="submit" class="btn btn-primary">Update Project</button>
+    </form>
+</section>
+{% endblock %}

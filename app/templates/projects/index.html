@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="header-action" style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Projects</h1>
+        <div class="buttons">
+            <a href="{{ url_for('ai_projects.create') }}" class="btn btn-primary" style="background-color: #8e44ad; border-color: #8e44ad;">✨ Magic Create</a>
+            <a href="{{ url_for('projects.create') }}" class="btn btn-primary">Create New Project</a>
+        </div>
+    </div>
+
+    <div class="project-list">
+        {% for project in projects %}
+        <div class="card project-card">
+            <h2>{{ project.name }}</h2>
+            <p>{{ project.description }}</p>
+            <p class="meta">Start: {{ project.start_date }}</p>
+            <div class="actions" style="margin-top: 10px;">
+                <a href="{{ url_for('projects.show', id=project.id) }}" class="btn btn-secondary">View Details</a>
+                <a href="{{ url_for('projects.edit', id=project.id) }}" class="btn btn-secondary" style="background-color: #f39c12;">Edit</a>
+                <form action="{{ url_for('projects.delete', id=project.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-secondary" style="background-color: #c0392b;" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p>No projects found. Create one above!</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

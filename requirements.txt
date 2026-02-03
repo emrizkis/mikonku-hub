@@ -1,0 +1,11 @@
+Flask
+Flask-SQLAlchemy
+pandas
+plotly
+python-dotenv
+Flask-Migrate
+pywebview
+
+Flask-Mail
+Flask-APScheduler
+google-generativeai
